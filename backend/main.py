@@ -51,12 +51,12 @@ def summarize(req: SummarizeRequest):
     # 너무 길면 잘라서 첫 버전만 단순하게 처리
     raw_input_ids = tokenizer.encode(
         text,
-        add_special_tokens=False,
+        add_special_tokens=False, # 특수 토큰(시작, 끝 토큰)을 추가하지 않습니다. 아래에서 추가함.
         truncation=True,
         max_length=1022,
     )
 
-    input_ids = [tokenizer.bos_token_id] + raw_input_ids + [tokenizer.eos_token_id]
+    input_ids = [tokenizer.bos_token_id] + raw_input_ids + [tokenizer.eos_token_id] # begin of sentence, end of sentence
     input_tensor = torch.tensor([input_ids])
 
     with torch.no_grad():
@@ -64,8 +64,10 @@ def summarize(req: SummarizeRequest):
             input_tensor,
             max_length=128,
             min_length=32,
-            num_beams=4,
-            early_stopping=True,
+            # beam search: 출력 문장의 후보를 여러개 가지고 있음.
+            num_beams=4, # beam search 시 사용할 beam의 갯수. 1은 beam search 안 쓰겠다는 뜻.
+            early_stopping=True, 
+            # 2 토큰씩 묶어서 봤을 때 같은 토큰 묶음이 중복으로 나오지 않게 방지.
             no_repeat_ngram_size=2,
         )
     

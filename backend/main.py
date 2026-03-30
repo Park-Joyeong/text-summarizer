@@ -47,7 +47,6 @@ def summarize(req: SummarizeRequest):
 
     tokenizer, model = get_model()
 
-    # JOJO 여기부터 보기
     # 너무 길면 잘라서 첫 버전만 단순하게 처리
     raw_input_ids = tokenizer.encode(
         text,
